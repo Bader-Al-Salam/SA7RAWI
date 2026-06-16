@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض صور لعبتي</title>
+    <style>
+        /* إعدادات الخطوط والألوان العامة */
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --accent-color: #66fcf1;
+            --text-color: #ffffff;
+            --text-muted: #c5a059;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* عنوان الموقع */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+        }
+
+        header p {
+            color: #c5c6c7;
+            font-size: 1.1rem;
+        }
+
+        /* حاوية الصور المخصصة لـ صورتين متجاورتين */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* تقسيم الشاشة بالتساوي لـ صورتين */
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* كرت الصورة */
+        .gallery-item {
+            position: relative;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            aspect-ratio: 16 / 9; /* يحافظ على أبعاد كروت الصور المخصصة للألعاب */
+        }
+
+        /* تأثير عند تمرير الماوس على الكرت */
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(102, 252, 241, 0.2);
+        }
+
+        /* إعدادات الصورة داخل الكرت */
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.08); /* زووم خفيف للصورة عند الحوم فوقها */
+        }
+
+        /* الطبقة الشفافة التي تظهر فوق الصورة مع النص */
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100%;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay h3 {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .overlay p {
+            font-size: 0.9rem;
+            color: #e5e5e5;
+        }
+
+        /* واجهة عرض الصورة بكامل الشاشة (Lightbox) */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(102, 252, 241, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active .lightbox-img {
+            transform: scale(1);
+        }
+
+        /* زر الإغلاق (X) */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--accent-color);
+        }
+
+        /* التجاوب الذكي مع الهواتف والأجهزة اللوحية */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .gallery-container {
+                grid-template-columns: 1fr; /* تترتب الصور رأسيًا (فوق بعض) للهواتف */
+                gap: 20px;
+                max-width: 500px; /* حجم مريح ومناسب لعرض الهاتف */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>معرض لقطات لعبتي</h1>
+        <p>استكشف عالم اللعبة المثير من خلال هذه اللقطات الحصرية</p>
+    </header>
+
+    <main class="gallery-container">
+        
+        <!-- الصورة الأولى -->
+        <div class="gallery-item" onclick="openLightbox('lopy.jpg')">
+            <img src="lopy.jpg" alt="لقطة من اللعبة 1">
+            <div class="overlay">
+                <h3>الصفحة الرئيسية للعبة</h3>
+                <p>تحوي شخصية الساكورا ولامبورغيني خضراء واسحلة ايفو</p>
+            </div>
+        </div>
+
+        <!-- الصورة الثانية -->
+        <div class="gallery-item" onclick="openLightbox('game.jpg')">
+            <img src="game.jpg" alt="لقطة من اللعبة 2">
+            <div class="overlay">
+                <h3>شخصية الساكورا</h3>
+                <p>الساكورا يهرب من الشرطي داخل الجيم</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- عنصر الشاشة الكاملة المخفي -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="close-btn">&times;</span>
+        <img id="lightbox-img" class="lightbox-img" src="" alt="صورة مكبرة">
+    </div>
+
+    <!-- كود الجافا سكريبت لتشغيل ميزة تكبير الصور -->
+    <script>
+        function openLightbox(imageSrc) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            
+            lightboxImg.src = imageSrc;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; /* منع التمرير في الخلفية أثناء التكبير */
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto'; /* إعادة التمرير لوضعه الطبيعي */
+        }
+    </script>
+
+</body>
+</html>
